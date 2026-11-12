@@ -6,73 +6,69 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Fault Codes">
-<title>Fault Code Lookup</title>
+<title>CM Fault Code Lookup</title>
 <meta name="theme-color" content="#3d3935">
 <link rel="manifest" href="manifest.json?v=2">
 <link rel="icon" type="image/png" href="icon-192.png?v=2">
 <link rel="apple-touch-icon" href="icon-192.png?v=2">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Oxanium:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-/* Layout: one narrow column, sticky tab bar, inputs on top, result cards below */
+/* Layout: charcoal brand bar with logo, red rule, dark page; one narrow column of tabs, inputs and result cards.
+   Single dark theme on purpose, matching the Caudwell Marine site (charcoal bar, red accent, near-black teal page). */
 :root{
-  --bg:#f3f5f6; --surface:#ffffff; --ink:#14232b; --muted:#5b6b73; --line:#d5dde1;
-  --accent:#0b6b73; --accent-ink:#ffffff; --accent-soft:#d9eef0;
-  --warn:#9a5b00; --warn-soft:#fdeccf; --crit:#a3262a; --crit-soft:#fbdedf;
+  --bar:#3d3935; --red:#af272f; --red-hi:#c9313a;
+  --bg:#121a1e; --bg2:#152225; --surface:#1b292f; --ink:#eef3f4; --muted:#9fb0b6; --line:#2c3e45;
+  --font-display:'Oxanium','Arial Narrow',system-ui,sans-serif;
   --font-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
   --font-code:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#0f1a1f; --surface:#17262d; --ink:#e6eef1; --muted:#93a6ae; --line:#2a3d46;
-    --accent:#4fc3cc; --accent-ink:#06242a; --accent-soft:#143840;
-    --warn:#f0b35a; --warn-soft:#3a2a10; --crit:#f08a8d; --crit-soft:#3b1a1c; color-scheme:dark;
-  }
-}
-:root[data-theme="dark"]{
-  --bg:#0f1a1f; --surface:#17262d; --ink:#e6eef1; --muted:#93a6ae; --line:#2a3d46;
-  --accent:#4fc3cc; --accent-ink:#06242a; --accent-soft:#143840;
-  --warn:#f0b35a; --warn-soft:#3a2a10; --crit:#f08a8d; --crit-soft:#3b1a1c; color-scheme:dark;
+  color-scheme:dark;
 }
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.45;-webkit-text-size-adjust:100%}
+body{background:linear-gradient(180deg,var(--bg) 0,var(--bg2) 100%) fixed var(--bg)}
+.top{background:var(--bar);border-bottom:4px solid var(--red)}
+.top .in{max-width:720px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:14px}
+.top img{display:block;width:102px;height:66px}
 .wrap{max-width:720px;margin:0 auto;padding:0 16px 48px}
-header{padding:20px 0 12px}
-h1{margin:0;font-size:1.25rem;font-weight:600;text-wrap:balance}
-.sub{margin:2px 0 0;color:var(--muted);font-size:.85rem}
+header{padding:22px 0 14px}
+h1{margin:0;font-family:var(--font-display);font-size:1.9rem;line-height:1.05;text-transform:uppercase;letter-spacing:.02em;text-wrap:balance}
+h1 span{display:block;font-weight:300}
+h1 b{display:block;font-weight:700}
+.sub{margin:8px 0 0;color:var(--muted);font-size:.85rem}
 nav{position:sticky;top:0;z-index:5;background:var(--bg);padding:8px 0;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;border-bottom:1px solid var(--line)}
-nav button{font:inherit;font-size:.9rem;font-weight:500;padding:11px 6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;cursor:pointer;min-height:44px}
-nav button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+nav button{font-family:var(--font-display);font-size:.95rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;padding:11px 6px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:6px;cursor:pointer;min-height:44px}
+nav button[aria-selected="true"]{background:var(--red);border-color:var(--red);color:#fff}
+:focus-visible{outline:3px solid #fff;outline-offset:2px}
 .panel{display:none;padding-top:16px}
 .panel.on{display:block}
 .inputs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
 .inputs .full{grid-column:1/-1}
-label{display:block;font-size:.78rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
-input,select{width:100%;font:inherit;font-size:1.1rem;font-family:var(--font-code);padding:11px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);min-height:48px}
-input:focus,select:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
+label{display:block;font-family:var(--font-display);font-size:.8rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+input,select{width:100%;font:inherit;font-size:1.1rem;font-family:var(--font-code);padding:11px 12px;border:1.5px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);min-height:48px}
+input:focus,select:focus{border-color:var(--red-hi);outline:none;box-shadow:0 0 0 3px rgba(175,39,47,.45)}
 .status{font-size:.85rem;color:var(--muted);margin:4px 0 12px;min-height:1.3em}
-.card{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.card{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--red);border-radius:8px;padding:12px 14px;margin-bottom:10px}
 .fc{font-family:var(--font-code);font-weight:600;font-size:.95rem;word-break:break-word;margin:0 0 6px}
 .meta{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
-.pill{font-family:var(--font-code);font-size:.78rem;padding:3px 8px;border-radius:999px;background:var(--accent-soft);color:var(--ink);white-space:nowrap}
+.pill{font-family:var(--font-code);font-size:.78rem;padding:3px 8px;border-radius:4px;background:#26373e;color:var(--ink);white-space:nowrap}
 .pill b{font-weight:600;color:var(--muted);margin-right:4px}
-.flag{background:var(--crit-soft);color:var(--crit);font-weight:600}
-.flag.soft{background:var(--warn-soft);color:var(--warn)}
+.flag{background:var(--red);color:#fff;font-weight:600}
 .none{color:var(--muted);font-size:.85rem}
 .row{margin-top:8px}
-.row .k{display:block;font-size:.72rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
+.row .k{display:block;font-family:var(--font-display);font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px}
 .row .v{font-size:.95rem;word-break:break-word}
-.card.dtc{border-left-color:var(--warn)}
-.more{width:100%;font:inherit;font-weight:500;padding:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;min-height:48px;cursor:pointer}
+.card.dtc{border-left-color:#8a8379}
+.more{width:100%;font-family:var(--font-display);font-weight:600;text-transform:uppercase;letter-spacing:.04em;padding:12px;border:1.5px solid var(--red);background:transparent;color:var(--ink);border-radius:6px;min-height:48px;cursor:pointer}
 .hint{font-size:.8rem;color:var(--muted);margin-top:16px}
 </style>
 </head>
 <body>
+<div class="top"><div class="in"><img src="data:image/png;base64,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" width="102" height="66" alt="Caudwell Marine"></div></div>
 <div class="wrap">
   <header>
-    <h1>Fault Code Lookup</h1>
+    <h1><span>CM Fault</span><b>Code Lookup</b></h1>
     <p class="sub">PPE and HSE fault tables, VM DTC list. Data from Fault_codes_12_11_26.xlsx.</p>
   </header>
   <nav role="tablist" aria-label="Lookup type">
